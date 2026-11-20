@@ -1,0 +1,245 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model AdminUser {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         String    @default("admin")
+  lastLogin    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model WebsiteSetting {
+  id                    Int      @id @default(autoincrement())
+  studioName            String   @default("STROKE & SOUL")
+  artistName            String   @default("Alex Morgan")
+  tagline               String   @default("Every Line Tells a Story.")
+  announcementText      String   @default("Custom Handcrafted Portraits – Made With Passion")
+  announcementBg        String   @default("#292722")
+  announcementTextColor String   @default("#F7F3EB")
+  announcementVisible   Boolean  @default(true)
+  logoText              String   @default("STROKE & SOUL")
+  logoImageUrl          String   @default("")
+  faviconUrl            String   @default("/favicon.svg")
+  heroHeading           String   @default("Turning Your Precious Moments Into Timeless Art.")
+  heroSubheading        String   @default("Handcrafted pencil portraits and personalized sketches, created with passion, precision, and attention to every detail.")
+  heroPrimaryCtaText    String   @default("Explore Our Artwork")
+  heroPrimaryCtaLink    String   @default("/#gallery")
+  heroSecondaryCtaText  String   @default("Order Your Custom Sketch")
+  heroSecondaryCtaLink  String   @default("/order")
+  heroImageUrl          String   @default("https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80")
+  aboutHeading          String   @default("The Artist Behind Every Stroke")
+  aboutSubheading       String   @default("Fine art with soul, passion, and decades of mastery.")
+  aboutStory            String
+  aboutExperience       String
+  aboutSpecialization   String
+  aboutPhilosophy       String
+  aboutYearsExperience  Int      @default(12)
+  aboutPersonalMessage  String
+  aboutImageUrl         String
+  howItWorksHeading     String   @default("How It Works")
+  howItWorksSubheading  String   @default("A simple four-step process to transform your memories into timeless art.")
+  pricingHeading        String   @default("Custom Sketch Pricing & Size Guide")
+  pricingSubheading     String   @default("Transparent starting rates tailored to your choice of scale and detail.")
+  pricingNote           String   @default("Final pricing may vary depending on complexity, number of subjects, and additional customization.")
+  faqHeading            String   @default("Frequently Asked Questions")
+  faqSubheading         String   @default("Everything you need to know about commissioning your custom sketch.")
+  ctaHeading            String   @default("Have a Special Moment Worth Turning Into Art?")
+  ctaDescription        String   @default("Let us transform your favorite photograph into a beautiful handcrafted sketch.")
+  ctaButtonText         String   @default("Request Your Custom Sketch")
+  ctaButtonLink         String   @default("/order")
+  contactEmail          String   @default("hello@strokeandsoul.art")
+  contactPhone          String   @default("+1 (555) 234-5678")
+  whatsappNumber        String   @default("+15552345678")
+  businessAddress       String   @default("Studio 4B, Artisan Quarter, New York, NY")
+  instagramUrl          String   @default("https://instagram.com")
+  pinterestUrl          String   @default("https://pinterest.com")
+  facebookUrl           String   @default("https://facebook.com")
+  currency              String   @default("USD")
+  currencySymbol        String   @default("$")
+  defaultCountry        String   @default("United States")
+  timezone              String   @default("America/New_York")
+  seoTitle              String   @default("STROKE & SOUL | Handcrafted Custom Pencil Portraits")
+  seoDescription        String   @default("Commission handcrafted realistic pencil portrait sketches from master artists. Custom pencil drawings for gifts, anniversaries, and family heirlooms.")
+  ogImageUrl            String   @default("")
+  maintenanceMode       Boolean  @default(false)
+  navItems              String   @default("[{\"label\":\"Home\",\"href\":\"/\"},{\"label\":\"Gallery\",\"href\":\"/#gallery\"},{\"label\":\"About the Artist\",\"href\":\"/#about\"},{\"label\":\"Services\",\"href\":\"/#services\"},{\"label\":\"Reviews\",\"href\":\"/#reviews\"},{\"label\":\"Pricing\",\"href\":\"/#pricing\"},{\"label\":\"FAQ\",\"href\":\"/#faq\"},{\"label\":\"Contact\",\"href\":\"/#contact\"}]")
+  updatedAt             DateTime @updatedAt
+}
+
+model PageSection {
+  id           Int      @id @default(autoincrement())
+  sectionKey   String   @unique
+  title        String
+  isVisible    Boolean  @default(true)
+  displayOrder Int      @default(0)
+  updatedAt    DateTime @updatedAt
+}
+
+model Service {
+  id             Int      @id @default(autoincrement())
+  title          String
+  slug           String   @unique
+  description    String
+  imageUrl       String
+  startingPrice  Float
+  availableSizes String   @default("[\"A5\",\"A4\",\"A3\",\"A2\"]")
+  estimatedTime  String   @default("3-5 Business Days")
+  isActive       Boolean  @default(true)
+  displayOrder   Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model ServicePricing {
+  id                 Int      @id @default(autoincrement())
+  sketchType         String
+  paperSize          String
+  dimensions         String
+  basePrice          Float
+  maxDefaultSubjects Int      @default(1)
+  extraSubjectPrice  Float    @default(25.0)
+  framingPrice       Float    @default(35.0)
+  giftPackagingPrice Float    @default(15.0)
+  estimatedDays      String   @default("3-5 days")
+  isActive           Boolean  @default(true)
+  displayOrder       Int      @default(0)
+  updatedAt          DateTime @updatedAt
+}
+
+model GalleryCategory {
+  id           Int            @id @default(autoincrement())
+  name         String
+  slug         String         @unique
+  displayOrder Int            @default(0)
+  images       GalleryImage[]
+}
+
+model GalleryImage {
+  id             Int             @id @default(autoincrement())
+  title          String
+  description    String
+  categoryId     Int
+  category       GalleryCategory @relation(fields: [categoryId], references: [id])
+  imageUrl       String
+  beforeImageUrl String?         @default("")
+  tags           String          @default("")
+  isFeatured     Boolean         @default(false)
+  isActive       Boolean         @default(true)
+  displayOrder   Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Testimonial {
+  id               Int      @id @default(autoincrement())
+  customerName     String
+  location         String   @default("")
+  reviewText       String
+  rating           Int      @default(5)
+  customerImageUrl String?  @default("")
+  sketchType       String   @default("Portrait Sketch")
+  dateString       String   @default("Recent Commission")
+  isFeatured       Boolean  @default(false)
+  isVisible        Boolean  @default(true)
+  isDemo           Boolean  @default(true)
+  displayOrder     Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Faq {
+  id           Int      @id @default(autoincrement())
+  question     String
+  answer       String
+  category     String   @default("General")
+  isVisible    Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Enquiry {
+  id                      Int                     @id @default(autoincrement())
+  referenceNumber         String                  @unique
+  fullName                String
+  email                   String
+  phone                   String
+  country                 String                  @default("")
+  city                    String                  @default("")
+  sketchType              String
+  sketchSize              String
+  subjectsCount           Int                     @default(1)
+  orientation             String                  @default("Portrait")
+  paperType               String                  @default("Heavyweight Acid-Free Bristol")
+  framing                 String                  @default("Without Frame")
+  specialInstructions     String?                 @default("")
+  preferredDeliveryDate   String?                 @default("")
+  giftPackaging           Boolean                 @default(false)
+  additionalRequests      String?                 @default("")
+  estimatedPrice          Float                   @default(0.0)
+  quotedPrice             Float?                  @default(0.0)
+  currency                String                  @default("USD")
+  status                  String                  @default("New")
+  adminNotes              String?                 @default("")
+  estimatedCompletionDate String?                 @default("")
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  attachments             EnquiryAttachment[]
+  notes                   EnquiryNote[]
+  statusHistory           EnquiryStatusHistory[]
+}
+
+model EnquiryAttachment {
+  id           Int      @id @default(autoincrement())
+  enquiryId    Int
+  enquiry      Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  filename     String
+  originalName String
+  mimeType     String
+  fileSize     Int
+  fileUrl      String
+  createdAt    DateTime @default(now())
+}
+
+model EnquiryNote {
+  id                Int      @id @default(autoincrement())
+  enquiryId         Int
+  enquiry           Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  authorName        String   @default("Admin")
+  noteText          String
+  isCustomerVisible Boolean  @default(false)
+  createdAt         DateTime @default(now())
+}
+
+model EnquiryStatusHistory {
+  id           Int      @id @default(autoincrement())
+  enquiryId    Int
+  enquiry      Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  previousStatus String
+  newStatus    String
+  changeReason String?  @default("")
+  updatedBy    String   @default("Admin")
+  createdAt    DateTime @default(now())
+}
+
+model MediaLibrary {
+  id           Int      @id @default(autoincrement())
+  filename     String
+  originalName String
+  mimeType     String
+  fileSize     Int
+  fileUrl      String
+  altText      String?  @default("")
+  folder       String   @default("general")
+  createdAt    DateTime @default(now())
+}
